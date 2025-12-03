@@ -2,28 +2,8 @@
 
 ## Development Journey
 
-Our team approached this project by starting with the stopwatch example and adapting it into a countdown timer. We began by analyzing the existing state machine and identifying which components needed modification versus replacement.
-
-The first major task was removing the lap functionality from the original stopwatch. We then focused on implementing the three core states for the timer: Stopped, Running, and Alarm. The state pattern made this transition manageable since we could work on each state independently.
-
-The most challenging aspect was implementing the 3-second idle timeout in the Stopped state. We had to carefully track tick events and reset the counter whenever the user pressed the button. Getting the timing right required testing and adjustment.
-
-Adding sound functionality was straightforward once we understood MediaPlayer. We implemented a single beep when the timer starts and continuous alarm sound when time expires. The alarm stops cleanly when the user presses the button.
-
-We simplified the UI by removing the second button and changing the display from MM:SS to a simple 2-digit format. This made the interface cleaner and matched the project requirements exactly.
-
-Throughout development, we used git for version control and divided work among team members. Regular testing on the Android emulator helped catch issues early.
+Our team approached this project by starting with the stopwatch example and adapting it into a countdown timer. We began by analyzing the existing state machine and identifying which components needed modification versus replacement. The first major task was removing the lap functionality from the original stopwatch. We then focused on implementing the three core states for the timer: Stopped, Running, and Alarm. The state pattern made this transition manageable since we could work on each state independently. The most challenging aspect was implementing the 3-second idle timeout in the Stopped state. We had to carefully track tick events and reset the counter whenever the user pressed the button. Getting the timing right required testing and adjustment Adding sound functionality was straightforward once we understood MediaPlayer. We implemented a single beep when the timer starts and continuous alarm sound when time expires. The alarm stops cleanly when the user presses the button. We simplified the UI by removing the second button and changing the display from MM:SS to a simple 2-digit format. This made the interface cleaner and matched the project requirements exactly. Throughout development, we used git for version control and divided work among team members. Regular testing on the Android emulator helped catch issues early.
 
 ## Model vs Code Relationship
 
-Our extended state diagram closely matches the implemented code structure. The three states (Stopped, Running, Alarm) map directly to our Java state classes. Each transition in the diagram corresponds to a method call in the code.
-
-The main similarity is that both model and code follow the State design pattern. Actions and transitions are clearly separated, making the code easy to understand and maintain.
-
-One difference is that the model shows guards (conditions) on transitions, while in code these appear as if statements within state methods. For example, the "runtime > 0" guard in the model becomes `if (sm.getRuntime() > 0)` in StoppedState.
-
-Another difference is that timing concerns (the 3-second countdown) are more explicit in code than in the model. We added an `idleTickCount` variable to track elapsed time, which isn't shown in the state diagram.
-
-We found it more effective to model first, then code. The state diagram helped us understand the overall behavior before getting into implementation details. However, after coding, we would simplify our model slightly - some implementation details like the idle counter don't need to be in the high-level diagram.
-
-If we revised our model now, we would add more explicit notation for the timing behavior and possibly show the beep/alarm actions more clearly on the transitions.
+Our extended state diagram closely matches the implemented code structure. The three states (Stopped, Running, Alarm) map directly to our Java state classes. Each transition in the diagram corresponds to a method call in the code. The main similarity is that both model and code follow the State design pattern. Actions and transitions are clearly separated, making the code easy to understand and maintain. One difference is that the model shows guards (conditions) on transitions, while in code these appear as if statements within state methods. For example, the "runtime > 0" guard in the model becomes `if (sm.getRuntime() > 0)` in StoppedState. Another difference is that timing concerns (the 3-second countdown) are more explicit in code than in the model. We added an `idleTickCount` variable to track elapsed time, which isn't shown in the state diagram. We found it more effective to model first, then code. The state diagram helped us understand the overall behavior before getting into implementation details. However, after coding, we would simplify our model slightly - some implementation details like the idle counter don't need to be in the high-level diagram.
