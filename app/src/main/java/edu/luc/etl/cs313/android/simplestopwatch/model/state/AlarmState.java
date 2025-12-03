@@ -10,15 +10,25 @@ class AlarmState implements StopwatchState {
 
     private final StopwatchSMStateView sm;
 
-
-    // Listener for Alarm action?
-
-
     @Override
     public void onStartStop() {
-        sm.actionStop();
+        sm.actionStopAlarm();
+        sm.actionReset();
         sm.toStoppedState();
-
     }
 
+    @Override
+    public void onTick() {
+        // Alarm continues beeping, do nothing on tick
+    }
+
+    @Override
+    public void updateView() {
+        sm.updateUIRuntime();
+    }
+
+    @Override
+    public int getId() {
+        return R.string.ALARM;
+    }
 }

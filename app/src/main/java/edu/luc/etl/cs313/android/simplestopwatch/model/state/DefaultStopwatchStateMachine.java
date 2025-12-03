@@ -49,12 +49,12 @@ public class DefaultStopwatchStateMachine implements StopwatchStateMachine {
     // known states
     private final StopwatchState STOPPED     = new StoppedState(this);
     private final StopwatchState RUNNING     = new RunningState(this);
-    //private final StopwatchState ALARMING     = new AlarmState(this);
+    private final StopwatchState ALARMING    = new AlarmState(this);
 
     // transitions
     @Override public void toRunningState()    { setState(RUNNING); }
     @Override public void toStoppedState()    { setState(STOPPED); }
-    //@Override public void toAlarmState()      { /* setState(ALARMING);*/ }
+    @Override public void toAlarmState()      { setState(ALARMING); }
 
     // actions
     @Override public void actionInit()       { toStoppedState(); actionReset(); }
@@ -63,9 +63,12 @@ public class DefaultStopwatchStateMachine implements StopwatchStateMachine {
     @Override public void actionStart()      { clockModel.start(); }
     @Override public void actionStop()       { clockModel.stop(); }
     @Override public void actionInc()        { timeModel.incRuntime(); actionUpdateView(); }
-    // Timer Countdown Action
     @Override public void actionDec()        { timeModel.decRuntime(); actionUpdateView(); }
-    // Alarm Action
-    //@Override public void actionAlarm()      { /* listener.onAlarm(); */ }
     @Override public void actionUpdateView() { state.updateView(); }
+    @Override public void actionBeep()       { listener.playBeep(); }
+    @Override public void actionStartAlarm() { listener.startAlarm(); }
+    @Override public void actionStopAlarm()  { listener.stopAlarm(); }
+
+    // getters
+    @Override public int getRuntime()        { return timeModel.getRuntime(); }
 }

@@ -24,6 +24,7 @@ class RunningState implements StopwatchState {
         // If time reaches 0, go to Alarm State
         if (sm.getRuntime() == 0) {
             sm.actionStop();
+            sm.actionStartAlarm();
             sm.toAlarmState();
         }
     }

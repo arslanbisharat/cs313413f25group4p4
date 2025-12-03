@@ -11,24 +11,23 @@ interface StopwatchSMStateView {
     // transitions
     void toRunningState();
     void toStoppedState();
-    //void toAlarmState();
+    void toAlarmState();
 
     // actions
     void actionInit();
     void actionReset();
     void actionStart();
     void actionStop();
-    // Idle Increment Action
-    //void resetIdleTick();
-    //void incIdleTick();
     void actionInc();
-    // Timer Countdown Action
     void actionDec();
     void actionUpdateView();
-    // Alarm Action
-    //void actionAlarm();
+    void actionBeep();
+    void actionStartAlarm();
+    void actionStopAlarm();
 
     // state-dependent UI updates
     void updateUIRuntime();
-    
+
+    // getters
+    int getRuntime();
 }

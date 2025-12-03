@@ -1,11 +1,16 @@
 package edu.luc.etl.cs313.android.simplestopwatch.android;
 
 import android.app.Activity;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.widget.TextView;
 
+import java.io.IOException;
 import java.util.Locale;
 
 import edu.luc.etl.cs313.android.simplestopwatch.R;
@@ -27,6 +32,11 @@ public class StopwatchAdapter extends Activity implements StopwatchModelListener
      * The state-based dynamic model.
      */
     private StopwatchModelFacade model;
+
+    /**
+     * MediaPlayer for alarm sound.
+     */
+    private MediaPlayer alarmPlayer;
 
     protected void setModel(final StopwatchModelFacade model) {
         this.model = model;
@@ -58,17 +68,15 @@ public class StopwatchAdapter extends Activity implements StopwatchModelListener
     // TODO remaining lifecycle methods
 
     /**
-     * Updates the seconds and minutes in the UI.
+     * Updates the timer display in the UI.
      * @param time
      */
     public void onTimeUpdate(final int time) {
         // UI adapter responsibility to schedule incoming events on UI thread
         runOnUiThread(() -> {
             final TextView tvS = findViewById(R.id.seconds);
-            final TextView tvM = findViewById(R.id.minutes);
             final var locale = Locale.getDefault();
-            tvS.setText(String.format(locale,"%02d", time % Constants.SEC_PER_MIN));
-            tvM.setText(String.format(locale,"%02d", time / Constants.SEC_PER_MIN));
+            tvS.setText(String.format(locale,"%02d", time));
         });
     }
 
@@ -87,5 +95,70 @@ public class StopwatchAdapter extends Activity implements StopwatchModelListener
     // forward event listener methods to the model
     public void onStartStop(final View view) {
         model.onStartStop();
+    }
+
+    /**
+     * Plays a single beep sound.
+     */
+    @Override
+    public void playBeep() {
+        runOnUiThread(() -> {
+            try {
+                final Uri notificationUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                final MediaPlayer beepPlayer = MediaPlayer.create(getApplicationContext(), notificationUri);
+                if (beepPlayer != null) {
+                    beepPlayer.start();
+                    beepPlayer.setOnCompletionListener(MediaPlayer::release);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    /**
+     * Starts the continuous alarm sound.
+     */
+    @Override
+    public void startAlarm() {
+        runOnUiThread(() -> {
+            try {
+                if (alarmPlayer == null) {
+                    final Uri alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
+                    alarmPlayer = new MediaPlayer();
+                    alarmPlayer.setDataSource(getApplicationContext(), alarmUri);
+                    alarmPlayer.setAudioStreamType(AudioManager.STREAM_ALARM);
+                    alarmPlayer.setLooping(true);
+                    alarmPlayer.prepare();
+                }
+                alarmPlayer.start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    /**
+     * Stops the continuous alarm sound.
+     */
+    @Override
+    public void stopAlarm() {
+        runOnUiThread(() -> {
+            if (alarmPlayer != null && alarmPlayer.isPlaying()) {
+                alarmPlayer.stop();
+                alarmPlayer.release();
+                alarmPlayer = null;
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Clean up MediaPlayer
+        if (alarmPlayer != null) {
+            alarmPlayer.release();
+            alarmPlayer = null;
+        }
     }
 }
