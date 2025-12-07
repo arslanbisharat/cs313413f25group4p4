@@ -12,6 +12,8 @@ class StoppedState implements StopwatchState {
 
     private int idleTickCount = 0;
     private static final int IDLE_TIMEOUT = 3; // 3 seconds
+    private static final int MAX_TIME = 99; // 99 seconds
+    private boolean idleArmed = false;
 
     @Override
     public void onStartStop() {
@@ -19,25 +21,39 @@ class StoppedState implements StopwatchState {
         sm.actionInc();
         // Reset idle counter when button is pressed
         idleTickCount = 0;
-        // If max value reached, start immediately
-        if (sm.getRuntime() >= 99) {
+
+        if (sm.getRuntime() >= MAX_TIME) {
+            sm.actionBeep();
             sm.actionStart();
             sm.toRunningState();
+        } else if (sm.getRuntime() > 0) {
+            idleArmed = true;
+            // the clock  runs in background
+            // so that the idle countdown is measured only by onTick events
         }
     }
 
     @Override
     public void onTick() {
-        // If timer has a value set, count down idle time
-        if (sm.getRuntime() > 0) {
-            idleTickCount++;
-            if (idleTickCount >= IDLE_TIMEOUT) {
-                // 3 seconds elapsed, beep and start running
-                idleTickCount = 0;
-                sm.actionBeep();
-                sm.actionStart();
-                sm.toRunningState();
-            }
+        // counts idle time if countdown was armed by a recent button press.
+        if (!idleArmed) {
+            return;
+        }
+
+        if (sm.getRuntime() <= 0) {
+            idleTickCount = 0;
+            idleArmed = false;
+            return;
+        }
+
+        idleTickCount++;
+        if (idleTickCount >= IDLE_TIMEOUT) {
+            // beep and start after IDLE_TIMEOUT seconds
+            idleTickCount = 0;
+            idleArmed = false;
+            sm.actionBeep();
+            sm.actionStart();
+            sm.toRunningState();
         }
     }
 
