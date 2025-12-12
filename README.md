@@ -62,7 +62,50 @@ with the required line
 
 # Running the Application
 
+## Option 1: Using IntelliJ IDEA or Android Studio
+
 In IntelliJ: `Run > Run app`
+
+## Option 2: Using Command Line
+
+1. **Build the app:**
+   ```
+   ./gradlew assembleDebug
+   ```
+
+2. **Start an Android emulator** (if not already running):
+
+   First, list available AVDs:
+   ```
+   <path-to-android-sdk>/emulator/emulator -list-avds
+   ```
+
+   Then start an emulator:
+   ```
+   <path-to-android-sdk>/emulator/emulator -avd <avd-name> &
+   ```
+
+   Example:
+   ```
+   ~/Android/Sdk/emulator/emulator -avd Medium_Phone_API_36.1 &
+   ```
+
+3. **Install the app on the emulator:**
+   ```
+   ./gradlew installDebug
+   ```
+
+4. **Launch the app:**
+   ```
+   adb shell am start -n edu.luc.etl.cs313.android.stopwatch/edu.luc.etl.cs313.android.simplestopwatch.android.StopwatchAdapter
+   ```
+
+Alternatively, you can combine steps 1 and 3:
+```
+./gradlew installDebug
+```
+
+This will build and install the app in one command.
 
 # Running the Tests
 
