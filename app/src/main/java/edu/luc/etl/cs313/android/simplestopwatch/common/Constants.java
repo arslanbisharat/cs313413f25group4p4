@@ -8,8 +8,9 @@ public enum Constants {
     ;
 
     public static final int SEC_PER_TICK = 1;
-    // public static final int SEC_PER_MIN = 60;
+    public static final int SEC_PER_MIN = 60;
+    public static final int SEC_PER_HOUR = 3600;
     // Constant Max Value 99
-    public static final int MAX_TIME = 99; 
+    public static final int MAX_TIME = 99;
 
 }

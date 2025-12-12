@@ -26,6 +26,15 @@
         android:layout_centerHorizontal="true" >
 
         <TextView
+            android:id="@+id/minutes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00"
+            android:textSize="120sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <TextView
             android:id="@+id/seconds"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -47,6 +56,14 @@
             android:layout_height="wrap_content"
             android:onClick="onStartStop"
             android:text="@string/startStop" />
+
+        <Button
+            android:id="@+id/resetLap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/startStop"
+            android:visibility="gone"
+            android:text="Reset" />
     </RelativeLayout>
 
 </RelativeLayout>

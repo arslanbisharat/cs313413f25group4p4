@@ -18,6 +18,11 @@ class AlarmState implements StopwatchState {
     }
 
     @Override
+    public void onLapReset() {
+        // No action in alarm state for lap/reset
+    }
+
+    @Override
     public void onTick() {
         // Alarm continues beeping, do nothing on tick
     }

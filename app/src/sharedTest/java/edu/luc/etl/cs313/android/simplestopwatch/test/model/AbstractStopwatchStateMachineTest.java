@@ -68,53 +68,59 @@ public abstract class AbstractStopwatchStateMachineTest {
     }
 
     /**
-     * Verifies the following scenario: time is 0, press start, wait 5+ seconds,
-     * expect time 5.
+     * Verifies the timer scenario: increment to 5, wait for idle timeout (3 sec),
+     * then run for 2 seconds, expect time 3.
      */
     @Test
     public void testScenarioRun() {
         assertTimeEquals(0);
         assertFalse(dependency.isStarted());
-        // directly invoke the button press event handler methods
-        model.onStartStop();
-        assertTrue(dependency.isStarted());
-        onTickRepeat(5);
+        // Press button 5 times to increment to 5
+        for (int i = 0; i < 5; i++) {
+            model.onStartStop();
+        }
         assertTimeEquals(5);
+        assertFalse(dependency.isStarted()); // Not started yet
+        // Wait 3 seconds for idle timeout
+        onTickRepeat(3);
+        assertTrue(dependency.isStarted()); // Now started
+        assertTimeEquals(5); // Time hasn't decremented yet
+        // Wait 2 more seconds of running
+        onTickRepeat(2);
+        assertTimeEquals(3); // Should have decremented to 3
     }
 
     /**
-     * Verifies the following scenario: time is 0, press start, wait 5+ seconds,
-     * expect time 5, press lap, wait 4 seconds, expect time 5, press start,
-     * expect time 5, press lap, expect time 9, press lap, expect time 0.
-     *
-     * @throws Throwable
+     * Verifies timer reset scenario: increment, start running, then reset.
      */
     @Test
     public void testScenarioRunLapReset() {
         assertTimeEquals(0);
         assertFalse(dependency.isStarted());
-        // directly invoke the button press event handler methods
-        model.onStartStop();
+        assertEquals(R.string.STOPPED, dependency.getState());
+
+        // Increment to 10
+        for (int i = 0; i < 10; i++) {
+            model.onStartStop();
+        }
+        assertTimeEquals(10);
+        assertFalse(dependency.isStarted());
+
+        // Wait for idle timeout (3 seconds)
+        onTickRepeat(3);
+        assertTrue(dependency.isStarted());
         assertEquals(R.string.RUNNING, dependency.getState());
+        assertTimeEquals(10);
+
+        // Run for 3 seconds
+        onTickRepeat(3);
+        assertTimeEquals(7);
         assertTrue(dependency.isStarted());
-        onTickRepeat(5);
-        assertTimeEquals(5);
-        model.onLapReset();
-        assertEquals(R.string.LAP_RUNNING, dependency.getState());
-        assertTrue(dependency.isStarted());
-        onTickRepeat(4);
-        assertTimeEquals(5);
+
+        // Press button to cancel and reset
         model.onStartStop();
-        assertEquals(R.string.LAP_STOPPED, dependency.getState());
         assertFalse(dependency.isStarted());
-        assertTimeEquals(5);
-        model.onLapReset();
         assertEquals(R.string.STOPPED, dependency.getState());
-        assertFalse(dependency.isStarted());
-        assertTimeEquals(9);
-        model.onLapReset();
-        assertEquals(R.string.STOPPED, dependency.getState());
-        assertFalse(dependency.isStarted());
         assertTimeEquals(0);
     }
 
@@ -200,6 +206,13 @@ class UnifiedMockDependency implements TimeModel, ClockModel, StopwatchModelList
     }
 
     @Override
+    public void decRuntime() {
+        if (runningTime > 0) {
+            runningTime--;
+        }
+    }
+
+    @Override
     public int getRuntime() {
         return runningTime;
     }
@@ -212,5 +225,17 @@ class UnifiedMockDependency implements TimeModel, ClockModel, StopwatchModelList
     @Override
     public int getLaptime() {
         return lapTime;
+    }
+
+    @Override
+    public void playBeep() {
+    }
+
+    @Override
+    public void startAlarm() {
+    }
+
+    @Override
+    public void stopAlarm() {
     }
 }

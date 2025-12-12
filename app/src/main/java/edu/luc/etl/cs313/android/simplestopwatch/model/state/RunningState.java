@@ -19,6 +19,11 @@ class RunningState implements StopwatchState {
     }
 
     @Override
+    public void onLapReset() {
+        // No action in running state for lap/reset
+    }
+
+    @Override
     public void onTick() {
         sm.actionDec();
         // If time reaches 0, go to Alarm State

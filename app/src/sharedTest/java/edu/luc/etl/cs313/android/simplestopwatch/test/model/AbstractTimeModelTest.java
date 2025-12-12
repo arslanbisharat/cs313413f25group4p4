@@ -48,21 +48,21 @@ public abstract class AbstractTimeModelTest {
         final var rt = model.getRuntime();
         final var lt = model.getLaptime();
         model.incRuntime();
-        assertEquals((rt + SEC_PER_TICK) % SEC_PER_MIN, model.getRuntime());
+        assertEquals(rt + SEC_PER_TICK, model.getRuntime());
         assertEquals(lt, model.getLaptime());
     }
 
     /**
-     * Verifies that runtime turns over correctly.
+     * Verifies that runtime caps at 99 (timer max).
      */
     @Test
     public void testIncrementRuntimeMany() {
-        final int rt = model.getRuntime();
         final int lt = model.getLaptime();
-        for (int i = 0; i < SEC_PER_HOUR; i ++) {
+        for (int i = 0; i < 150; i ++) {
             model.incRuntime();
         }
-        assertEquals(rt, model.getRuntime());
+        // Timer should cap at 99
+        assertEquals(99, model.getRuntime());
         assertEquals(lt, model.getLaptime());
     }
 

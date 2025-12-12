@@ -12,4 +12,6 @@ public interface TimeModel {
     // New Decrement Runtime Method
     void decRuntime();
     int getRuntime();
+    void setLaptime();
+    int getLaptime();
 }

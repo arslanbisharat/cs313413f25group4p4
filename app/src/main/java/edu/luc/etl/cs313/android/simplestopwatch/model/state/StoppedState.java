@@ -34,6 +34,13 @@ class StoppedState implements StopwatchState {
     }
 
     @Override
+    public void onLapReset() {
+        sm.actionReset();
+        idleTickCount = 0;
+        idleArmed = false;
+    }
+
+    @Override
     public void onTick() {
         // counts idle time if countdown was armed by a recent button press.
         if (!idleArmed) {
